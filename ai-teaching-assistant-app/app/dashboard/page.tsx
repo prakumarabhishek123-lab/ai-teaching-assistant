@@ -3,6 +3,7 @@ import { DashboardToolCard } from "@/components/DashboardToolCard";
 
 const tools = [
   {
+    
     title: "Concept Simplification",
     description:
       "Break a difficult topic into age-appropriate explanations, examples, and classroom language.",

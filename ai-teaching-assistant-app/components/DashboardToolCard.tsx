@@ -18,10 +18,31 @@ export function DashboardToolCard({
   outputTitle,
 }: DashboardToolCardProps) {
   const [input, setInput] = useState("");
-  const [hasGenerated, setHasGenerated] = useState(false);
+  const [output, setOutput] = useState("");
+  const [language, setLanguage] = useState("Hindi");
 
   function handleGenerate() {
-    setHasGenerated(true);
+    if (title === "Translation & Dictation") {
+      const translated =
+        language === "Hindi"
+          ? `Hindi Translation:\n${input}`
+          : `English Translation:\n${input}`;
+
+      const dictation = `
+Dictation Practice:
+1. ${input}
+2. Read slowly and write carefully.
+3. Check spelling after writing.
+`;
+
+      setOutput(
+        `${translated}\n\n${dictation}\nVoice Support: Ready for future integration`
+      );
+    } else {
+      setOutput(
+        "Generated response preview will appear here once assistant logic is connected."
+      );
+    }
   }
 
   return (
@@ -31,33 +52,42 @@ export function DashboardToolCard({
         <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
       </div>
 
-      <label className="mt-6 text-sm font-medium text-slate-800" htmlFor={title}>
+      {title === "Translation & Dictation" && (
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          className="mt-4 rounded border p-2"
+        >
+          <option>Hindi</option>
+          <option>English</option>
+        </select>
+      )}
+
+      <label className="mt-6 text-sm font-medium text-slate-800">
         {inputLabel}
       </label>
+
       <textarea
-        id={title}
         value={input}
-        onChange={(event) => setInput(event.target.value)}
+        onChange={(e) => setInput(e.target.value)}
         placeholder={placeholder}
-        className="mt-2 min-h-28 resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-100"
+        className="mt-2 min-h-28 resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
       />
 
-      {/* TODO: Add tool-specific AI, voice, translation, or board logic here later. */}
       <button
         type="button"
         onClick={handleGenerate}
-        className="mt-4 rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-200"
+        className="mt-4 rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white"
       >
         Generate
       </button>
 
       <div className="mt-5 flex flex-1 flex-col rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4">
         <p className="text-sm font-semibold text-slate-800">{outputTitle}</p>
-        <p className="mt-3 text-sm leading-6 text-slate-500">
-          {hasGenerated
-            ? "Generated response preview will appear here once the assistant logic is connected."
-            : "Output placeholder"}
-        </p>
+
+        <pre className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
+          {output || "Output placeholder"}
+        </pre>
       </div>
     </article>
   );
