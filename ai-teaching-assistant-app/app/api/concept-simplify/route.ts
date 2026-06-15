@@ -3,16 +3,16 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { topic } = await req.json();
+    const {
+      topic,
+      language = "Hinglish",
+      classLevel = "General",
+    } = await req.json();
 
     if (!topic) {
       return NextResponse.json(
-        {
-          error: "Topic is required",
-        },
-        {
-          status: 400,
-        }
+        { error: "Topic is required" },
+        { status: 400 }
       );
     }
 
@@ -20,56 +20,73 @@ export async function POST(req: Request) {
 
     if (!geminiKey) {
       return NextResponse.json(
-        {
-          error: "Gemini API key not found",
-        },
-        {
-          status: 500,
-        }
+        { error: "Gemini API key not found" },
+        { status: 500 }
       );
     }
 
     const genAI = new GoogleGenerativeAI(geminiKey);
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash-lite",
     });
 
     const prompt = `
 You are an AI Teaching Assistant.
 
-Explain "${topic}" for school students.
+Explain the topic in ${language}.
+Topic: ${topic}
+Class Level: ${classLevel}
 
 Rules:
-- Use simple Hinglish.
-- Suitable for Classes 1-8.
-- Keep explanation short (80-120 words).
-- Highlight important words using **bold** format.
-- Give exactly 3 key points.
-- Give one classroom example.
-- Create a voice-friendly script.
-- voiceText must include:
-  1. Explanation
-  2. All 3 key points
-  3. Classroom example
-- It should sound like a teacher speaking in class.
+- Keep explanation short and mobile friendly.
+- Use simple classroom language.
+- Explanation must be easy for voice speaking.
+- Do not make long paragraphs.
+- Give maximum 5 key points.
+- Worksheet questions should be exam-focused for this class level.
+- Keep answers short.
 
+Return ONLY valid JSON. No markdown. No extra text.
 
-Return ONLY JSON:
-
+JSON format:
 {
-  "title":"",
-  "explanation":"",
-  "keyPoints":[],
-  "example":"",
-  "voiceText":"",
-  "voiceText":"Combine explanation + key points + classroom example in a natural speaking format"
-  
+  "title": "",
+  "explanation": "",
+  "keyPoints": [],
+  "example": "",
+  "worksheet": {
+    "mcqs": [
+      {
+        "question": "",
+        "options": ["", "", "", ""],
+        "answer": ""
+      }
+    ],
+    "oneMark": [
+      {
+        "question": "",
+        "answer": ""
+      }
+    ],
+    "twoMark": [
+      {
+        "question": "",
+        "answer": ""
+      }
+    ],
+    "shortAnswer": [
+      {
+        "question": "",
+        "answer": ""
+      }
+    ]
+  },
+  "voiceText": ""
 }
 `;
 
     const result = await model.generateContent(prompt);
-
     const response = await result.response;
     const text = response.text();
 
@@ -88,25 +105,33 @@ Return ONLY JSON:
         explanation: cleanedText,
         keyPoints: [],
         example: "",
+        worksheet: {
+          mcqs: [],
+          oneMark: [],
+          twoMark: [],
+          shortAnswer: [],
+        },
         voiceText: cleanedText,
       };
     }
 
-
     return NextResponse.json({
-  success: true,
-  response: parsedResponse,
-});
-} catch (error: any) {
-  console.error("FULL ERROR:", error);
+      success: true,
+      response: parsedResponse,
+    });
+  } catch (error: any) {
+    console.error("FULL ERROR:", error);
 
-  return NextResponse.json(
-    {
-      error: error?.message || "Failed to generate content",
-    },
-    {
-      status: 500,
-    }
-  );
-}
+    const message =
+      error?.message?.includes("429")
+        ? "Gemini quota exceeded. Please use another API key or try later."
+        : error?.message?.includes("503")
+          ? "Gemini server is busy. Please try again in 1-2 minutes."
+          : error?.message || "Failed to generate content";
+
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
+  }
 }
