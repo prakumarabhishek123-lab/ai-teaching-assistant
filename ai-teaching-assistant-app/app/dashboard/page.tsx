@@ -1,5 +1,9 @@
 import Link from "next/link";
+import { ConceptSimplificationCard } from "@/components/ConceptSimplificationCard";
 import { DashboardToolCard } from "@/components/DashboardToolCard";
+import { DigitalBoardCard } from "@/components/DigitalBoardCard";
+import { TranslationDictationCard } from "@/components/TranslationDictationCard";
+import { VoiceQuizCard } from "@/components/VoiceQuizCard";
 
 const tools = [
   {
@@ -70,7 +74,17 @@ export default function DashboardPage() {
 
       <section className="mx-auto grid max-w-7xl gap-5 px-6 py-10 sm:px-8 lg:grid-cols-2 lg:px-10">
         {tools.map((tool) => (
-          <DashboardToolCard key={tool.title} {...tool} />
+          tool.title === "Concept Simplification" ? (
+            <ConceptSimplificationCard key={tool.title} {...tool} />
+          ) : tool.title === "Voice Quiz" ? (
+            <VoiceQuizCard key={tool.title} {...tool} />
+          ) : tool.title === "Translation & Dictation" ? (
+            <TranslationDictationCard key={tool.title} {...tool} />
+          ) : tool.title === "Digital Board" ? (
+            <DigitalBoardCard key={tool.title} {...tool} />
+          ) : (
+            <DashboardToolCard key={tool.title} {...tool} />
+          )
         ))}
       </section>
     </main>
