@@ -7,6 +7,7 @@ import { VoiceQuizCard } from "@/components/VoiceQuizCard";
 
 const tools = [
   {
+    
     title: "Concept Simplification",
     description:
       "Turn a heavy topic into clear classroom language, with examples students can picture.",
