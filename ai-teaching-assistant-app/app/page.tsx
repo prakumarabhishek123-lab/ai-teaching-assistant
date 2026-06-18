@@ -4,21 +4,21 @@ import { HowItWorksStep } from "@/components/HowItWorksStep";
 
 const features = [
   {
-    title: "Simple Lesson Support",
+    title: "Explain the hard part",
     description:
-      "Turn difficult textbook concepts into classroom-ready explanations for mixed learning levels.",
+      "Shape a difficult idea into language your class can actually hold on to.",
     icon: "CS",
   },
   {
-    title: "Voice-Ready Practice",
+    title: "Check the room",
     description:
-      "Prepare oral quizzes and speaking prompts that help teachers check understanding quickly.",
+      "Create quick spoken questions that reveal who is ready and who needs one more example.",
     icon: "VQ",
   },
   {
-    title: "Local Language Help",
+    title: "Bridge the language gap",
     description:
-      "Support translation, dictation, and multilingual learning moments for government school classrooms.",
+      "Move between classroom languages without losing the warmth of the lesson.",
     icon: "TR",
   },
 ];
@@ -26,32 +26,28 @@ const features = [
 const steps = [
   {
     step: "1",
-    title: "Choose a classroom task",
+    title: "Pick the classroom moment",
     description:
-      "Start with concept simplification, quiz creation, translation, dictation, or board planning.",
+      "Begin with the part of the lesson that needs the most care.",
   },
   {
     step: "2",
-    title: "Enter the lesson context",
+    title: "Add the real context",
     description:
-      "Add a topic, grade level, language preference, or short paragraph from the lesson.",
+      "Bring in the topic, grade, language, or paragraph your students will meet.",
   },
   {
     step: "3",
-    title: "Generate teacher-ready output",
+    title: "Walk in with a draft",
     description:
-      "Review the output, adapt it for your students, and use it directly during class.",
+      "Use the result as a starting point, then make it sound like your own classroom.",
   },
 ];
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-950">
-      <section className="relative isolate overflow-hidden bg-[#050b2c] text-white">
-        <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_18%,rgba(147,197,253,0.95),transparent_28%),radial-gradient(circle_at_72%_26%,rgba(168,85,247,0.6),transparent_32%),linear-gradient(115deg,#f8fbff_0%,#e9efff_32%,#5b6ee8_58%,#07143f_100%)]" />
-        <div className="absolute inset-0 -z-10 opacity-70 [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:72px_72px]" />
-        <div className="absolute bottom-0 left-0 right-0 -z-10 h-56 animate-parallax-slow bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.38),transparent_62%)]" />
-        <div className="absolute bottom-0 left-0 right-0 -z-10 h-44 bg-[linear-gradient(135deg,transparent_20%,rgba(255,255,255,0.22)_20.5%,transparent_21%),linear-gradient(45deg,transparent_20%,rgba(255,255,255,0.14)_20.5%,transparent_21%)] bg-[length:34px_34px] opacity-30 [mask-image:linear-gradient(to_top,black,transparent)]" />
+    <main className="relative min-h-screen bg-slate-50 text-slate-950">
+      <section className="sticky top-0 z-0 isolate overflow-hidden bg-[linear-gradient(135deg,#f6d1fb_0%,#f4a2c4_48%,#ffaaa6_100%)] text-white">
 
         <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-6 sm:px-8 lg:px-10">
           <nav className="animate-fade-in flex items-center justify-between">
@@ -65,19 +61,14 @@ export default function Home() {
               <span>AI Teaching Assistant</span>
             </Link>
             <div className="flex items-center gap-3">
-              <a
-                href="https://github.com/prakumarabhishek123-lab/ai-teaching-assistant"
-                target="_blank"
-                rel="noreferrer"
-                className="hidden rounded-lg border border-slate-900/10 bg-white/45 px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/70 sm:inline-flex"
-              >
-                View GitHub
-              </a>
               <Link
                 href="/dashboard"
-                className="rounded-lg border border-white/25 bg-slate-950/90 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-slate-900"
+                className="group inline-flex items-center gap-2 rounded-lg border border-white/25 bg-slate-950/90 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-slate-900"
               >
                 Open Dashboard
+                <span className="w-0 translate-x-[-4px] overflow-hidden opacity-0 transition-all group-hover:w-4 group-hover:translate-x-0 group-hover:opacity-100">
+                  →
+                </span>
               </Link>
             </div>
           </nav>
@@ -86,35 +77,29 @@ export default function Home() {
             <div className="animate-fade-up">
               <p className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/55 px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur">
                 <span className="h-2 w-2 rounded-full bg-blue-600 shadow-[0_0_18px_rgba(37,99,235,0.9)]" />
-                Voice-first. Teacher-first. Future-ready.
+                Built for teachers. Tuned for real classrooms.
               </p>
-              <h1 className="mt-8 max-w-4xl font-mono text-3xl font-semibold leading-tight tracking-normal text-slate-950 sm:text-4xl lg:text-5xl">
-                <span className="block">Voice-Enabled</span>
-                <span className="block">AI Teaching Assistant</span>
+              <h1 className="mt-8 max-w-4xl text-3xl font-bold leading-tight tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
+                <span className="block">AI-Powered Teaching Assistant</span>
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-700 sm:text-xl">
-                Empowering government school teachers with AI-driven concept
-                simplification, voice quizzes, translation support, and digital
-                board tools.
+                Plan explanations, quick checks, translations, and board notes
+                with a tool that feels closer to a teaching partner than a blank
+                page.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/dashboard"
-                  className="rounded-lg bg-slate-950 px-6 py-3.5 text-center text-sm font-semibold text-white shadow-xl shadow-blue-950/25 transition hover:-translate-y-1 hover:bg-blue-950 hover:shadow-2xl"
+                  className="group inline-flex items-center justify-center gap-2 rounded-lg bg-slate-950 px-6 py-3.5 text-center text-sm font-semibold text-white shadow-xl shadow-blue-950/25 transition hover:-translate-y-1 hover:bg-blue-950 hover:shadow-2xl"
                 >
                   Open Dashboard
+                  <span className="w-0 translate-x-[-4px] overflow-hidden opacity-0 transition-all group-hover:w-4 group-hover:translate-x-0 group-hover:opacity-100">
+                    →
+                  </span>
                 </Link>
-                <a
-                  href="https://github.com/prakumarabhishek123-lab/ai-teaching-assistant"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg border border-slate-900/10 bg-white/60 px-6 py-3.5 text-center text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:-translate-y-1 hover:bg-white"
-                >
-                  View GitHub
-                </a>
               </div>
               <div className="mt-8 grid max-w-2xl grid-cols-2 gap-3 text-xs font-semibold text-slate-700 sm:grid-cols-4">
-                {["Save Time", "Simplify Concepts", "Engage Students", "Teach Better"].map(
+                {["Voice Quiz", "Lesson Planning", "Translation", "Worksheet Generator"].map(
                   (item) => (
                     <div
                       key={item}
@@ -128,8 +113,11 @@ export default function Home() {
             </div>
 
             <div className="animate-fade-up-delayed lg:-mr-8 xl:-mr-14">
-              <div className="relative overflow-hidden rounded-[1.75rem] border border-white/35 bg-white/15 p-3 shadow-[0_34px_120px_rgba(15,23,42,0.45)] backdrop-blur-2xl">
+              <div id="demo" className="relative overflow-hidden rounded-[1.75rem] border border-white/35 bg-white/15 p-3 shadow-[0_34px_120px_rgba(15,23,42,0.45)] backdrop-blur-2xl">
                 <div className="absolute inset-0 -z-10 bg-gradient-to-br from-white/35 via-blue-500/10 to-violet-500/20" />
+                <div className="absolute right-5 top-5 z-10 animate-pulse rounded-full bg-white/80 px-3 py-2 text-xs font-semibold text-slate-900 shadow-lg shadow-slate-900/15 backdrop-blur-xl ring-1 ring-white/60 sm:right-7 sm:top-7 sm:px-4 sm:text-sm">
+                  ✨ AI Assistant Active
+                </div>
                 <video
                   className="aspect-video w-full rounded-[1.25rem] object-cover shadow-2xl lg:min-h-[430px]"
                   src="/teaching.mp4"
@@ -147,33 +135,35 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-16 sm:px-8 lg:px-10">
-        <div className="max-w-2xl">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Built for everyday school teaching
-          </h2>
-          <p className="mt-4 leading-7 text-slate-600">
-            The assistant focuses on practical classroom moments: explaining,
-            questioning, translating, dictating, and preparing the board.
-          </p>
-        </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {features.map((feature) => (
-            <FeatureCard key={feature.title} {...feature} />
-          ))}
+      <section className="relative z-10 bg-[radial-gradient(ellipse_at_46%_60%,rgba(255,255,255,0.95)_0%,rgba(255,255,255,0.82)_24%,transparent_48%),radial-gradient(ellipse_at_78%_58%,rgba(255,244,232,0.95)_0%,rgba(255,231,222,0.56)_28%,transparent_50%),linear-gradient(180deg,#f9a8b8_0%,#f6bfd0_22%,#f2d7f2_58%,#fff8fd_100%)] px-6 py-16 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight">
+              Made for the everyday work of teaching
+            </h2>
+            <p className="mt-4 leading-7 text-slate-600">
+              Not a loud promise. Just a quieter way to prepare the moments
+              that make a lesson land.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {features.map((feature) => (
+              <FeatureCard key={feature.title} {...feature} />
+            ))}
+          </div>
         </div>
       </section>
 
       <section
         id="how-it-works"
-        className="border-y border-slate-200 bg-white px-6 py-16 sm:px-8 lg:px-10"
+        className="relative z-10 border-y border-white/70 bg-[radial-gradient(ellipse_at_18%_20%,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.58)_28%,transparent_52%),radial-gradient(ellipse_at_82%_78%,rgba(255,225,211,0.72)_0%,transparent_46%),linear-gradient(135deg,#fffaf5_0%,#f9e5ee_48%,#f1edf9_100%)] px-6 py-16 sm:px-8 lg:px-10"
       >
         <div className="mx-auto max-w-7xl">
           <div className="max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight">How it works</h2>
+            <h2 className="text-3xl font-bold tracking-tight">How it comes together</h2>
             <p className="mt-4 leading-7 text-slate-600">
-              A simple workflow keeps the teacher in control while reducing
-              preparation time.
+              Keep the classroom voice yours. Let the tool handle the first
+              draft.
             </p>
           </div>
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
@@ -184,22 +174,24 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-16 sm:px-8 lg:px-10">
-        <div className="rounded-lg bg-slate-950 px-6 py-12 text-center text-white sm:px-10">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Prepare a better lesson in minutes
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl leading-7 text-slate-300">
-            Open the dashboard to explore the four classroom tools and shape
-            content for your students.
-          </p>
-          <div className="mt-8 flex justify-center">
-            <Link
-              href="/dashboard"
-              className="rounded-lg bg-teal-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-400"
-            >
-              Go to Dashboard
-            </Link>
+      <section className="relative z-10 bg-[#fbf7f2] px-6 py-16 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-lg bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,0.88)_0%,rgba(255,224,232,0.62)_34%,transparent_62%),linear-gradient(135deg,#ffd9e3_0%,#f5b7ca_48%,#f8d9e6_100%)] px-6 py-12 text-center text-slate-950 shadow-sm shadow-pink-900/10 sm:px-10">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-950">
+              Prepare with a little more breathing room
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl leading-7 text-slate-700">
+              Open the dashboard and turn rough lesson ideas into something you
+              can use before the bell.
+            </p>
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/dashboard"
+                className="rounded-lg bg-teal-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-400"
+              >
+                Go to Dashboard
+              </Link>
+            </div>
           </div>
         </div>
       </section>

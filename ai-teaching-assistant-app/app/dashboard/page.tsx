@@ -9,34 +9,34 @@ const tools = [
   {
     title: "Concept Simplification",
     description:
-      "Break a difficult topic into age-appropriate explanations, examples, and classroom language.",
-    inputLabel: "Topic or textbook paragraph",
-    placeholder: "Example: Explain fractions for Grade 5 using daily life examples.",
-    outputTitle: "Simplified explanation",
+      "Turn a heavy topic into clear classroom language, with examples students can picture.",
+    inputLabel: "Topic, chapter line, or textbook paragraph",
+    placeholder: "Example: Fractions for Grade 5, explained through sharing food.",
+    outputTitle: "Classroom explanation",
   },
   {
     title: "Voice Quiz",
     description:
-      "Draft quick spoken questions for checking student understanding during class.",
-    inputLabel: "Quiz topic",
-    placeholder: "Example: Water cycle, Grade 6, five oral questions.",
-    outputTitle: "Voice quiz prompt",
+      "Build a short oral check-in that helps you hear understanding in the room.",
+    inputLabel: "Topic for the check-in",
+    placeholder: "Example: Water cycle, Grade 6, five spoken questions.",
+    outputTitle: "Quick oral check",
   },
   {
     title: "Translation & Dictation",
     description:
-      "Prepare translation support and short dictation practice for multilingual classrooms.",
-    inputLabel: "Text and target language",
-    placeholder: "Example: Translate this paragraph to Hindi and create dictation lines.",
-    outputTitle: "Translation and dictation output",
+      "Move a sentence across languages and shape it into simple dictation practice.",
+    inputLabel: "Text and language direction",
+    placeholder: "Example: Translate this paragraph to Hindi, then make a dictation line.",
+    outputTitle: "Translation and dictation",
   },
   {
     title: "Digital Board",
     description:
-      "Create a clean board plan with headings, key points, and activity prompts.",
-    inputLabel: "Board topic",
-    placeholder: "Example: Board layout for Newton's laws with examples.",
-    outputTitle: "Digital board plan",
+      "Sketch a board-ready flow with headings, key points, examples, and questions.",
+    inputLabel: "Topic for the board",
+    placeholder: "Example: Newton's laws with one everyday example.",
+    outputTitle: "Board-ready flow",
   },
 ];
 
@@ -59,14 +59,14 @@ export default function DashboardPage() {
 
           <div className="max-w-3xl py-8">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">
-              Teacher dashboard
+              Classroom studio
             </p>
             <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-              Classroom tools for faster preparation
+              Prepare tomorrow&apos;s class with more ease
             </h1>
             <p className="mt-5 text-lg leading-8 text-slate-600">
-              Use these cards to draft lesson support. The inputs and buttons
-              are ready for future AI, voice, and translation logic.
+              Draft the parts of a lesson that usually take the longest: the
+              explanation, the questions, the language support, and the board.
             </p>
           </div>
         </div>
