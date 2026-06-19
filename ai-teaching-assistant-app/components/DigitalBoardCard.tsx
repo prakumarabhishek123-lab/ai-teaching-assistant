@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 
 type DigitalBoardCardProps = {
@@ -237,7 +238,7 @@ export function DigitalBoardCard({
 
   const boardPanel = board ? (
     <div
-      className={`rounded-lg border p-5 shadow-inner ${
+      className={`min-w-0 overflow-hidden rounded-lg border p-3 shadow-inner sm:p-5 ${
         isFullscreen
           ? "min-h-[80vh] border-slate-700 bg-slate-950 text-white"
           : "border-slate-700 bg-slate-950 text-white"
@@ -245,7 +246,7 @@ export function DigitalBoardCard({
     >
       <div className="border-b border-white/30 pb-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-200">{labels.topicTitle}</p>
-        <h3 className="mt-2 text-2xl font-bold text-white">{board.topicTitle}</h3>
+        <h3 className="mt-2 break-words text-xl font-bold text-white sm:text-2xl">{board.topicTitle}</h3>
       </div>
 
       <div className="mt-5 grid gap-5 text-sm leading-6 md:grid-cols-2">
@@ -281,10 +282,21 @@ export function DigitalBoardCard({
   ) : null;
 
   return (
-    <article className="flex min-h-[360px] flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      <div>
-        <h2 className="text-xl font-semibold text-slate-950">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+    <article className="dashboard-card-cinematic group flex min-h-[360px] min-w-0 flex-col rounded-[1.5rem] border border-white/80 bg-white/70 p-4 shadow-[0_18px_60px_rgba(76,29,149,0.08)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_24px_70px_rgba(76,29,149,0.14)] sm:p-6">
+      <div className="flex items-start gap-4">
+        <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-2xl border border-white/80 shadow-sm transition duration-300 group-hover:scale-105">
+          <Image
+            src="/digital-board-logo.avif"
+            alt="Digital Board logo"
+            fill
+            sizes="44px"
+            className="object-cover"
+          />
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-xl font-semibold text-slate-950">{title}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+        </div>
       </div>
 
       <label className="mt-6 text-sm font-medium text-slate-800" htmlFor={title}>
@@ -295,7 +307,7 @@ export function DigitalBoardCard({
         value={topic}
         onChange={(event) => setTopic(event.target.value)}
         placeholder={placeholder}
-        className="mt-2 min-h-28 resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-100"
+        className="mt-2 min-h-28 w-full min-w-0 resize-none rounded-xl border border-white/90 bg-white/65 px-4 py-3 text-sm text-slate-900 shadow-inner outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
       />
 
       <label className="mt-4 text-sm font-medium text-slate-800" htmlFor={`${title}-language`}>
@@ -305,7 +317,7 @@ export function DigitalBoardCard({
         id={`${title}-language`}
         value={language}
         onChange={(event) => handleLanguageChange(event.target.value as LanguageOption)}
-        className="mt-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-100"
+        className="mt-2 w-full min-w-0 rounded-xl border border-white/90 bg-white/65 px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
       >
         {languages.map((languageOption) => (
           <option key={languageOption} value={languageOption}>
@@ -318,12 +330,12 @@ export function DigitalBoardCard({
         type="button"
         onClick={handleGenerateBoard}
         disabled={isGenerating}
-        className="mt-4 rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-200 disabled:cursor-not-allowed disabled:bg-slate-400"
+        className="mt-4 rounded-xl bg-gradient-to-r from-blue-700 to-violet-700 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/15 transition hover:-translate-y-0.5 hover:from-blue-600 hover:to-violet-600 focus:outline-none focus:ring-4 focus:ring-violet-200 disabled:cursor-not-allowed disabled:from-slate-400 disabled:to-slate-400"
       >
         {isGenerating ? "Generating..." : "Generate Board"}
       </button>
 
-      <div className="mt-5 flex flex-1 flex-col rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4">
+      <div className="mt-5 flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/90 bg-white/55 p-3 shadow-inner shadow-violet-950/5 sm:p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <p className="text-sm font-semibold text-slate-800">{outputTitle}</p>
           {board ? (
@@ -365,9 +377,9 @@ export function DigitalBoardCard({
       </div>
 
       {board && isFullscreen ? (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950 p-4 sm:p-8">
+        <div className="fixed inset-0 z-50 overflow-x-hidden overflow-y-auto bg-slate-950 p-3 sm:p-8">
           <div className="mx-auto max-w-6xl">
-            <div className="mb-4 flex flex-wrap justify-end gap-2">
+            <div className="mb-4 flex flex-wrap justify-start gap-2 sm:justify-end">
               <button
                 type="button"
                 onClick={handleCopyBoard}
