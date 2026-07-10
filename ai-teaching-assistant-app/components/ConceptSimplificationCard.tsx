@@ -187,7 +187,7 @@ export function ConceptSimplificationCard({
     setIsLoading(true);
 
     try {
-      // Temporary interview demo mode. Reconnect Gemini by replacing this with
+      // Temporary interview demo mode. Replace this with
       // the existing POST request to /api/concept-simplify.
       await new Promise((resolve) => setTimeout(resolve, 450));
       setResult(createDemoConcept(trimmedTopic, language));

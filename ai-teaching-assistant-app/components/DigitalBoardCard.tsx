@@ -172,7 +172,7 @@ export function DigitalBoardCard({
     setIsGenerating(true);
 
     try {
-      // Temporary interview demo mode. Reconnect Gemini by replacing this with
+      // Temporary interview demo mode. Replace this with
       // a POST request to a future digital board API route.
       await new Promise((resolve) => setTimeout(resolve, 350));
       setBoard(createDemoBoard(trimmedTopic, language));

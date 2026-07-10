@@ -199,3 +199,45 @@ body {
     animation: none;
   }
 }
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .worksheet-print-area,
+  .worksheet-print-area * {
+    visibility: visible;
+  }
+
+  .worksheet-print-area {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    background: #ffffff !important;
+  }
+
+  .worksheet-print-area section,
+  .worksheet-print-area div {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+
+  .worksheet-print-area section,
+  .worksheet-print-area > div {
+    border-color: #cbd5e1 !important;
+  }
+
+  .worksheet-actions {
+    display: none !important;
+  }
+}

@@ -157,7 +157,7 @@ export function TranslationDictationCard({
       return;
     }
 
-    // Temporary interview demo mode. Reconnect Gemini by replacing this helper
+    // Temporary interview demo mode. Replace this helper
     // with a POST request to a future translation API route.
     setResult(getDemoTranslation(trimmedInput, direction));
   }

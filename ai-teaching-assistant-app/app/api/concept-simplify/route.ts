@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
 
-type GeminiPart = {
-  text?: string;
-};
-
-type GeminiResponse = {
-  candidates?: Array<{
-    content?: {
-      parts?: GeminiPart[];
-    };
-  }>;
+type GroqResponse = {
+  choices?: Array<{ message?: { content?: string } }>;
   error?: {
     message?: string;
   };
@@ -21,7 +13,7 @@ type SimplifiedConcept = {
   example: string;
 };
 
-const GEMINI_MODEL = "gemini-2.0-flash";
+const GROQ_MODEL = "llama-3.1-8b-instant";
 const MAX_WORDS = 150;
 
 function countWords(text: string) {
@@ -69,15 +61,16 @@ function normalizeConcept(raw: Partial<SimplifiedConcept>): SimplifiedConcept {
   return concept;
 }
 
-function extractText(response: GeminiResponse) {
-  return response.candidates?.[0]?.content?.parts?.map((part) => part.text ?? "").join("").trim() ?? "";
+function parseJson(text: string) {
+  const fencedMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  return JSON.parse(fencedMatch?.[1] ?? text);
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
-    return NextResponse.json({ error: "Gemini API key is not configured." }, { status: 500 });
+    return NextResponse.json({ error: "Groq API key is not configured." }, { status: 500 });
   }
 
   let topic = "";
@@ -94,74 +87,47 @@ export async function POST(request: Request) {
   }
 
   try {
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `Simplify this classroom topic for a teacher: ${topic}`,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            maxOutputTokens: 220,
-            temperature: 0.4,
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: "OBJECT",
-              properties: {
-                explanation: {
-                  type: "STRING",
-                },
-                keyPoints: {
-                  type: "ARRAY",
-                  items: {
-                    type: "STRING",
-                  },
-                },
-                example: {
-                  type: "STRING",
-                },
-              },
-              required: ["explanation", "keyPoints", "example"],
-            },
-          },
-          systemInstruction: {
-            parts: [
-              {
-                text:
-                  "You help school teachers explain concepts simply. Return only JSON. Keep the total response under 150 words. Use warm, classroom-friendly language. Include exactly 3 short key points and 1 real-life example.",
-              },
-            ],
-          },
-        }),
+    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        max_tokens: 220,
+        temperature: 0.4,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              "You help school teachers explain concepts simply. Return only JSON. Keep the total response under 150 words. Use warm, classroom-friendly language. Include exactly 3 short key points and 1 real-life example.",
+          },
+          {
+            role: "user",
+            content: `Simplify this classroom topic for a teacher: ${topic}. Return JSON with keys: explanation, keyPoints, example.`,
+          },
+        ],
+      }),
+    });
 
-    const data = (await geminiResponse.json()) as GeminiResponse;
+    const data = (await groqResponse.json()) as GroqResponse;
 
-    if (!geminiResponse.ok) {
+    if (!groqResponse.ok) {
       return NextResponse.json(
-        { error: data.error?.message ?? "Gemini could not simplify this topic." },
-        { status: geminiResponse.status },
+        { error: data.error?.message ?? "Groq could not simplify this topic." },
+        { status: groqResponse.status },
       );
     }
 
-    const text = extractText(data);
+    const text = data.choices?.[0]?.message?.content?.trim();
 
     if (!text) {
-      return NextResponse.json({ error: "Gemini returned an empty response." }, { status: 502 });
+      return NextResponse.json({ error: "Groq returned an empty response." }, { status: 502 });
     }
 
-    const concept = normalizeConcept(JSON.parse(text) as Partial<SimplifiedConcept>);
+    const concept = normalizeConcept(parseJson(text) as Partial<SimplifiedConcept>);
 
     return NextResponse.json(concept);
   } catch {
