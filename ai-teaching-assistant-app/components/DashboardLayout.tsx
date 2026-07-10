@@ -38,9 +38,17 @@ export function DashboardLayout({
               </span>
               AI Teaching Assistant
             </Link>
-            <span className="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold capitalize text-blue-800">
-              {roleLabels[role]} workspace
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/"
+                className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-100"
+              >
+                Home
+              </Link>
+              <span className="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold capitalize text-blue-800">
+                {roleLabels[role]} workspace
+              </span>
+            </div>
           </div>
           <nav aria-label="Role dashboards" className="flex flex-wrap gap-2">
             {ROLE_TYPES.map((item) => (
@@ -100,4 +108,3 @@ function SummaryCard({ label, value, detail }: { label: string; value: string; d
     </article>
   );
 }
-

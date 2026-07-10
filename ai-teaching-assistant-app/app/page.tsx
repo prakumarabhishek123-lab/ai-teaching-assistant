@@ -23,6 +23,33 @@ const features = [
   },
 ];
 
+const dashboards = [
+  {
+    title: "Student Dashboard",
+    description: "Ask doubts, choose class-level learning, and keep daily practice moving.",
+    href: "/student/dashboard",
+    icon: "ST",
+    color: "bg-[#e7f0ff]",
+    iconColor: "bg-[#b8d8ff]",
+  },
+  {
+    title: "Teacher Dashboard",
+    description: "Create worksheets, quizzes, and classroom-ready learning activities.",
+    href: "/teacher/dashboard",
+    icon: "TR",
+    color: "bg-[#fff6cf]",
+    iconColor: "bg-[#f4d35e]",
+  },
+  {
+    title: "Parent Dashboard",
+    description: "Follow progress, recent activity, and support your child with clarity.",
+    href: "/parent/dashboard",
+    icon: "PR",
+    color: "bg-[#e4dcff]",
+    iconColor: "bg-[#d4c5ff]",
+  },
+] as const;
+
 const steps = [
   {
     step: "1",
@@ -48,7 +75,6 @@ export default function Home() {
   return (
     <main className="relative min-h-screen overflow-x-clip bg-slate-50 text-slate-950">
       <section className="landing-scroll-cover-hero sticky top-0 z-0 isolate overflow-hidden bg-[linear-gradient(135deg,#f6d1fb_0%,#f4a2c4_48%,#ffaaa6_100%)] text-white">
-
         <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-4 sm:px-8 sm:py-6 lg:px-10">
           <nav className="animate-fade-in flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Link
@@ -67,7 +93,7 @@ export default function Home() {
               >
                 Open Dashboard
                 <span className="w-0 translate-x-[-4px] overflow-hidden opacity-0 transition-all group-hover:w-4 group-hover:translate-x-0 group-hover:opacity-100">
-                  →
+                  -&gt;
                 </span>
               </Link>
             </div>
@@ -94,7 +120,7 @@ export default function Home() {
                 >
                   Open Dashboard
                   <span className="w-0 translate-x-[-4px] overflow-hidden opacity-0 transition-all group-hover:w-4 group-hover:translate-x-0 group-hover:opacity-100">
-                    →
+                    -&gt;
                   </span>
                 </Link>
               </div>
@@ -116,7 +142,7 @@ export default function Home() {
               <div id="demo" className="relative min-w-0 overflow-hidden rounded-[1.25rem] border border-white/35 bg-white/15 p-2 shadow-[0_34px_120px_rgba(15,23,42,0.45)] backdrop-blur-2xl sm:rounded-[1.75rem] sm:p-3">
                 <div className="absolute inset-0 -z-10 bg-gradient-to-br from-white/35 via-blue-500/10 to-violet-500/20" />
                 <div className="absolute right-5 top-5 z-10 animate-pulse rounded-full bg-white/80 px-3 py-2 text-xs font-semibold text-slate-900 shadow-lg shadow-slate-900/15 backdrop-blur-xl ring-1 ring-white/60 sm:right-7 sm:top-7 sm:px-4 sm:text-sm">
-                  ✨ AI Assistant Active
+                  AI Assistant Active
                 </div>
                 <video
                   className="aspect-video h-auto w-full max-w-full rounded-[0.9rem] object-cover shadow-2xl sm:rounded-[1.25rem] lg:min-h-[430px]"
@@ -131,11 +157,43 @@ export default function Home() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
-      <section className="landing-scroll-cover-panel relative z-10 bg-[radial-gradient(ellipse_at_46%_60%,rgba(255,255,255,0.95)_0%,rgba(255,255,255,0.82)_24%,transparent_48%),radial-gradient(ellipse_at_78%_58%,rgba(255,244,232,0.95)_0%,rgba(255,231,222,0.56)_28%,transparent_50%),linear-gradient(180deg,#f9a8b8_0%,#f6bfd0_22%,#f2d7f2_58%,#fff8fd_100%)] px-4 py-12 sm:px-8 sm:py-16 lg:px-10">
+      <section className="landing-scroll-cover-panel relative z-10 border-y border-white/70 bg-[radial-gradient(ellipse_at_24%_24%,rgba(255,255,255,0.9)_0%,rgba(255,255,255,0.58)_28%,transparent_52%),radial-gradient(ellipse_at_82%_42%,rgba(255,232,213,0.68)_0%,transparent_48%),linear-gradient(135deg,#fff8fd_0%,#f7ecf8_48%,#f8fafc_100%)] px-4 py-12 sm:px-8 sm:py-16 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-violet-700">Choose your space</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">Choose Your Dashboard</h2>
+              <p className="mt-4 leading-7 text-slate-600">
+                Start from the workspace that matches how you support learning today.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {dashboards.map((dashboard) => (
+              <Link
+                key={dashboard.title}
+                href={dashboard.href}
+                className={`group flex min-h-48 flex-col rounded-lg border border-white p-6 text-slate-950 shadow-sm shadow-slate-900/10 transition hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-violet-100 ${dashboard.color}`}
+              >
+                <span className={`flex h-12 w-12 items-center justify-center rounded-lg text-sm font-black shadow-sm shadow-slate-900/10 ${dashboard.iconColor}`}>
+                  {dashboard.icon}
+                </span>
+                <span className="mt-5 text-lg font-semibold text-slate-950">{dashboard.title}</span>
+                <span className="mt-3 flex-1 text-sm leading-6 text-slate-700">{dashboard.description}</span>
+                <span className="mt-5 text-sm font-bold text-violet-800 transition group-hover:text-violet-950">
+                  Open dashboard <span aria-hidden="true">-&gt;</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative z-10 bg-[radial-gradient(ellipse_at_46%_60%,rgba(255,255,255,0.95)_0%,rgba(255,255,255,0.82)_24%,transparent_48%),radial-gradient(ellipse_at_78%_58%,rgba(255,244,232,0.95)_0%,rgba(255,231,222,0.56)_28%,transparent_50%),linear-gradient(180deg,#f9a8b8_0%,#f6bfd0_22%,#f2d7f2_58%,#fff8fd_100%)] px-4 py-12 sm:px-8 sm:py-16 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-2xl">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
