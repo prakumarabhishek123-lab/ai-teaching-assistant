@@ -4,13 +4,9 @@ import {
   SUBJECT_TOPIC_MISMATCH_MESSAGE,
   validateSubjectTopic,
 } from "@/lib/server/subjectValidation";
+import { generateGroqJson, groqErrorResponse } from "@/lib/server/groq";
 
 type QuizLanguage = "English" | "Hindi" | "Hinglish";
-
-type GroqResponse = {
-  choices?: Array<{ message?: { content?: string } }>;
-  error?: { message?: string };
-};
 
 type QuizQuestion = {
   question: string;
@@ -23,7 +19,6 @@ type QuizPayload = {
   questions: QuizQuestion[];
 };
 
-const GROQ_MODEL = "llama-3.1-8b-instant";
 const LANGUAGES: QuizLanguage[] = ["English", "Hindi", "Hinglish"];
 
 function cleanString(value: unknown) {
@@ -40,11 +35,6 @@ function isSubject(value: unknown): value is Subject {
 
 function isQuizLanguage(value: unknown): value is QuizLanguage {
   return typeof value === "string" && LANGUAGES.includes(value as QuizLanguage);
-}
-
-function parseJson(text: string) {
-  const fencedMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  return JSON.parse(fencedMatch?.[1] ?? text);
 }
 
 function normalizeQuiz(raw: Partial<QuizPayload>, topic: string): QuizPayload {
@@ -100,12 +90,6 @@ function buildQuizPrompt(classLevel: ClassLevel, subject: Subject, topic: string
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.GROQ_API_KEY;
-
-  if (!apiKey) {
-    return NextResponse.json({ error: "Groq API key is not configured." }, { status: 500 });
-  }
-
   let body: { classLevel?: unknown; subject?: unknown; topic?: unknown; language?: unknown };
 
   try {
@@ -142,47 +126,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: SUBJECT_TOPIC_MISMATCH_MESSAGE }, { status: 400 });
     }
 
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        temperature: 0.35,
-        max_tokens: 1900,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are an expert Indian school teacher creating clear, age-appropriate MCQ quizzes for Class 1 to Class 8. Return valid JSON only.",
-          },
-          {
-            role: "user",
-            content: buildQuizPrompt(classLevel, subject, topic, language),
-          },
-        ],
-      }),
+    const rawQuiz = await generateGroqJson<Partial<QuizPayload>>({
+      system: "You are an accurate Indian school teacher creating age-appropriate MCQ quizzes for Classes 1–8. Never invent facts. Return valid JSON only.",
+      prompt: buildQuizPrompt(classLevel, subject, topic, language),
+      maxTokens: 1900,
+      temperature: 0.3,
     });
-
-    const data = (await groqResponse.json()) as GroqResponse;
-
-    if (!groqResponse.ok) {
-      return NextResponse.json(
-        { error: data.error?.message ?? "AI could not generate the quiz right now." },
-        { status: groqResponse.status },
-      );
-    }
-
-    const text = data.choices?.[0]?.message?.content?.trim();
-
-    if (!text) {
-      return NextResponse.json({ error: "AI returned an empty quiz." }, { status: 502 });
-    }
-
-    const quiz = normalizeQuiz(parseJson(text) as Partial<QuizPayload>, topic);
+    const quiz = normalizeQuiz(rawQuiz, topic);
 
     if (quiz.questions.length !== 10) {
       return NextResponse.json({ error: "AI did not return 10 quiz questions. Please try again." }, { status: 502 });
@@ -191,6 +141,6 @@ export async function POST(request: Request) {
     return NextResponse.json(quiz);
   } catch (error) {
     console.error("Quiz generator request failed", error);
-    return NextResponse.json({ error: "Something went wrong while generating the quiz." }, { status: 500 });
+    return groqErrorResponse(error);
   }
 }

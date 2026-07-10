@@ -1,139 +1,24 @@
-import { NextResponse } from "next/server";
+import { generateGroqJson, groqErrorResponse } from "@/lib/server/groq";
 
-type GroqResponse = {
-  choices?: Array<{ message?: { content?: string } }>;
-  error?: {
-    message?: string;
-  };
-};
-
-type SimplifiedConcept = {
-  explanation: string;
-  keyPoints: string[];
-  example: string;
-};
-
-const GROQ_MODEL = "llama-3.1-8b-instant";
-const MAX_WORDS = 150;
-
-function countWords(text: string) {
-  return text.trim().split(/\s+/).filter(Boolean).length;
-}
-
-function trimToWords(text: string, maxWords: number) {
-  const words = text.trim().split(/\s+/).filter(Boolean);
-  return words.length > maxWords ? `${words.slice(0, maxWords).join(" ")}...` : text.trim();
-}
-
-function normalizeConcept(raw: Partial<SimplifiedConcept>): SimplifiedConcept {
-  const keyPoints = Array.isArray(raw.keyPoints)
-    ? raw.keyPoints.filter((point) => typeof point === "string" && point.trim()).slice(0, 3)
-    : [];
-
-  while (keyPoints.length < 3) {
-    keyPoints.push("Connect the idea to what students already know.");
-  }
-
-  const concept = {
-    explanation:
-      typeof raw.explanation === "string" && raw.explanation.trim()
-        ? raw.explanation.trim()
-        : "This topic can be understood by breaking it into small, familiar steps.",
-    keyPoints,
-    example:
-      typeof raw.example === "string" && raw.example.trim()
-        ? raw.example.trim()
-        : "For example, compare it with a simple classroom or home activity students see every day.",
-  };
-
-  let remainingWords = MAX_WORDS;
-  concept.explanation = trimToWords(concept.explanation, Math.max(35, Math.min(80, remainingWords)));
-  remainingWords -= countWords(concept.explanation);
-
-  concept.keyPoints = concept.keyPoints.map((point) => {
-    const trimmed = trimToWords(point, Math.max(8, Math.floor(remainingWords / 4)));
-    remainingWords -= countWords(trimmed);
-    return trimmed;
-  });
-
-  concept.example = trimToWords(concept.example, Math.max(12, remainingWords));
-
-  return concept;
-}
-
-function parseJson(text: string) {
-  const fencedMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  return JSON.parse(fencedMatch?.[1] ?? text);
-}
+type Concept = { explanation: string; keyPoints: string[]; example: string; worksheet: string[] };
+const LANGUAGES = ["English", "Hindi", "Hinglish"];
 
 export async function POST(request: Request) {
-  const apiKey = process.env.GROQ_API_KEY;
-
-  if (!apiKey) {
-    return NextResponse.json({ error: "Groq API key is not configured." }, { status: 500 });
-  }
-
-  let topic = "";
-
   try {
-    const body = (await request.json()) as { topic?: unknown };
-    topic = typeof body.topic === "string" ? body.topic.trim() : "";
-  } catch {
-    return NextResponse.json({ error: "Please send a valid topic." }, { status: 400 });
-  }
+    const body = (await request.json()) as { topic?: unknown; language?: unknown };
+    const topic = typeof body.topic === "string" ? body.topic.trim() : "";
+    if (!topic) return Response.json({ error: "Please enter a topic to simplify." }, { status: 400 });
+    if (!LANGUAGES.includes(String(body.language))) return Response.json({ error: "Please choose a valid language." }, { status: 400 });
 
-  if (!topic) {
-    return NextResponse.json({ error: "Please enter a topic to simplify." }, { status: 400 });
-  }
-
-  try {
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        max_tokens: 220,
-        temperature: 0.4,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content:
-              "You help school teachers explain concepts simply. Return only JSON. Keep the total response under 150 words. Use warm, classroom-friendly language. Include exactly 3 short key points and 1 real-life example.",
-          },
-          {
-            role: "user",
-            content: `Simplify this classroom topic for a teacher: ${topic}. Return JSON with keys: explanation, keyPoints, example.`,
-          },
-        ],
-      }),
+    const concept = await generateGroqJson<Concept>({
+      system: "You are an accurate Indian school teacher for Classes 1–8. Never invent facts. Explain only established information, say when a topic is ambiguous, and return valid JSON only.",
+      prompt: `Explain "${topic}" in ${body.language} using simple, warm, age-appropriate classroom language. For Hindi use Devanagari; for Hinglish use natural Roman script. Provide exactly 3 key points, one familiar real-life example, and exactly 3 short worksheet questions. Return {"explanation":"...","keyPoints":["..."],"example":"...","worksheet":["..."]}.`,
+      maxTokens: 900,
+      temperature: 0.25,
     });
-
-    const data = (await groqResponse.json()) as GroqResponse;
-
-    if (!groqResponse.ok) {
-      return NextResponse.json(
-        { error: data.error?.message ?? "Groq could not simplify this topic." },
-        { status: groqResponse.status },
-      );
-    }
-
-    const text = data.choices?.[0]?.message?.content?.trim();
-
-    if (!text) {
-      return NextResponse.json({ error: "Groq returned an empty response." }, { status: 502 });
-    }
-
-    const concept = normalizeConcept(parseJson(text) as Partial<SimplifiedConcept>);
-
-    return NextResponse.json(concept);
-  } catch {
-    return NextResponse.json(
-      { error: "Something went wrong while simplifying the concept." },
-      { status: 500 },
-    );
+    if (!concept.explanation || concept.keyPoints?.length !== 3 || concept.worksheet?.length !== 3) throw new Error("Invalid output");
+    return Response.json(concept);
+  } catch (error) {
+    return groqErrorResponse(error);
   }
 }

@@ -1,15 +1,10 @@
 import { type Subject } from "@/lib/config/education";
-
-type GroqResponse = {
-  choices?: Array<{ message?: { content?: string } }>;
-  error?: { message?: string };
-};
+import { generateGroqJson } from "@/lib/server/groq";
 
 type ValidationResult = {
   matches: boolean;
 };
 
-const GROQ_MODEL = "llama-3.1-8b-instant";
 export const SUBJECT_TOPIC_MISMATCH_MESSAGE =
   "This topic does not match the selected subject. Please choose the correct subject or enter a relevant topic.";
 
@@ -163,11 +158,6 @@ function hasSimpleKeywordMismatch(topic: string, subject: Subject) {
   return matchingSubjects.length > 0 && !matchingSubjects.includes(subject);
 }
 
-function parseJson(text: string) {
-  const fencedMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  return JSON.parse(fencedMatch?.[1] ?? text);
-}
-
 export async function validateSubjectTopic({
   subject,
   topic,
@@ -185,55 +175,17 @@ export async function validateSubjectTopic({
     return false;
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("Groq API key is not configured.");
-  }
-
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      temperature: 0,
-      max_tokens: 80,
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content:
-            "You validate whether a school topic belongs to a selected subject for Indian Class 1 to Class 8 content. Return only JSON.",
-        },
-        {
-          role: "user",
-          content: [
-            `Selected subject: ${subject}`,
-            `Entered topic: ${trimmedTopic}`,
-            "Does this topic clearly belong to the selected subject?",
-            "Return JSON exactly like {\"matches\":true} or {\"matches\":false}.",
-            "If the topic is broad but commonly valid for the subject, return true.",
-          ].join("\n"),
-        },
-      ],
-    }),
+  const result = await generateGroqJson<Partial<ValidationResult>>({
+    system: "You validate whether a school topic belongs to a selected subject for Indian Classes 1–8. Return valid JSON only.",
+    prompt: [
+      `Selected subject: ${subject}`,
+      `Entered topic: ${trimmedTopic}`,
+      "Does this topic clearly belong to the selected subject?",
+      "Return {\"matches\":true} or {\"matches\":false}.",
+      "If the topic is broad but commonly valid for the subject, return true.",
+    ].join("\n"),
+    maxTokens: 80,
+    temperature: 0,
   });
-
-  const data = (await response.json()) as GroqResponse;
-
-  if (!response.ok) {
-    throw new Error(data.error?.message ?? "Unable to validate the topic.");
-  }
-
-  const text = data.choices?.[0]?.message?.content?.trim();
-
-  if (!text) {
-    throw new Error("Topic validation returned an empty response.");
-  }
-
-  const result = parseJson(text) as Partial<ValidationResult>;
   return result.matches === true;
 }

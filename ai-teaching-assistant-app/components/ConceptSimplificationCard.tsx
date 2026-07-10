@@ -83,6 +83,7 @@ function getSpeechVoice(language: LanguageOption, loadedVoices: SpeechSynthesisV
   return preferredVoice ?? matchingLanguageVoices[0] ?? null;
 }
 
+/* Legacy demo content retained for reference.
 function createDemoConcept(topic: string, language: LanguageOption): SimplifiedConcept {
   const cleanTopic = topic.replace(/\s+/g, " ").trim();
 
@@ -134,7 +135,7 @@ function createDemoConcept(topic: string, language: LanguageOption): SimplifiedC
       `Answer: Why is ${cleanTopic} useful in everyday life?`,
     ],
   };
-}
+} */
 
 export function ConceptSimplificationCard({
   title,
@@ -187,10 +188,14 @@ export function ConceptSimplificationCard({
     setIsLoading(true);
 
     try {
-      // Temporary interview demo mode. Replace this with
-      // the existing POST request to /api/concept-simplify.
-      await new Promise((resolve) => setTimeout(resolve, 450));
-      setResult(createDemoConcept(trimmedTopic, language));
+      const response = await fetch("/api/concept-simplify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: trimmedTopic, language }),
+      });
+      const data = (await response.json()) as SimplifiedConcept & { error?: string };
+      if (!response.ok) throw new Error(data.error || "Unable to simplify this topic right now.");
+      setResult(data);
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unable to simplify this topic.");
     } finally {
@@ -234,9 +239,7 @@ export function ConceptSimplificationCard({
     stopSpeaking();
     setLanguage(nextLanguage);
 
-    if (result && topic.trim()) {
-      setResult(createDemoConcept(topic, nextLanguage));
-    }
+    if (result) setResult(null);
   }
 
   return (

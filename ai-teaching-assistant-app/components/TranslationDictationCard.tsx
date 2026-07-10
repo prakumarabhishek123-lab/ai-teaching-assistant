@@ -25,6 +25,7 @@ const speechLanguageCodes: Record<DirectionOption, string> = {
   "Hindi → Hinglish": "hi-IN",
 };
 
+/* Legacy demo dictionaries retained for reference.
 const englishToHindiWords: Record<string, string> = {
   air: "हवा",
   animal: "जानवर",
@@ -124,7 +125,7 @@ function getDemoTranslation(text: string, direction: DirectionOption): Translati
     translatedText: translateFromHindi(text, hindiToHinglishWords),
     dictationSentence: "Students is sentence ko clearly likhenge.",
   };
-}
+} */
 
 export function TranslationDictationCard({
   title,
@@ -137,6 +138,7 @@ export function TranslationDictationCard({
   const [direction, setDirection] = useState<DirectionOption>("English → Hindi");
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy");
 
@@ -145,7 +147,7 @@ export function TranslationDictationCard({
     [result],
   );
 
-  function handleTranslate() {
+  async function handleTranslate() {
     const trimmedInput = input.trim();
     stopSpeaking();
     setError("");
@@ -157,9 +159,22 @@ export function TranslationDictationCard({
       return;
     }
 
-    // Temporary interview demo mode. Replace this helper
-    // with a POST request to a future translation API route.
-    setResult(getDemoTranslation(trimmedInput, direction));
+    setResult(null);
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/translation-dictation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: trimmedInput, direction }),
+      });
+      const data = (await response.json()) as TranslationResult & { error?: string };
+      if (!response.ok) throw new Error(data.error || "Unable to translate this text right now.");
+      setResult(data);
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Unable to translate this text right now.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleListen() {
@@ -211,10 +226,8 @@ export function TranslationDictationCard({
     stopSpeaking();
     setDirection(nextDirection);
 
-    if (result && input.trim()) {
-      setResult(getDemoTranslation(input.trim(), nextDirection));
-      setCopyLabel("Copy");
-    }
+    if (result) setResult(null);
+    setCopyLabel("Copy");
   }
 
   return (
@@ -257,9 +270,10 @@ export function TranslationDictationCard({
       <button
         type="button"
         onClick={handleTranslate}
-        className="mt-4 rounded-xl bg-gradient-to-r from-blue-700 to-violet-700 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/15 transition hover:-translate-y-0.5 hover:from-blue-600 hover:to-violet-600 focus:outline-none focus:ring-4 focus:ring-violet-200"
+        disabled={isLoading}
+        className="mt-4 rounded-xl bg-gradient-to-r from-blue-700 to-violet-700 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/15 transition hover:-translate-y-0.5 hover:from-blue-600 hover:to-violet-600 focus:outline-none focus:ring-4 focus:ring-violet-200 disabled:cursor-not-allowed disabled:from-slate-400 disabled:to-slate-400"
       >
-        Translate
+        {isLoading ? "Translating..." : "Translate"}
       </button>
 
       <div className="mt-5 flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/90 bg-white/55 p-3 shadow-inner shadow-violet-950/5 sm:p-4">
@@ -288,7 +302,8 @@ export function TranslationDictationCard({
 
         {error ? <p className="mt-3 text-sm leading-6 text-red-600">{error}</p> : null}
 
-        {!error && !result ? <p className="mt-3 text-sm leading-6 text-slate-500">Output placeholder</p> : null}
+        {isLoading ? <p className="mt-3 text-sm leading-6 text-slate-500">Creating translation and dictation...</p> : null}
+        {!isLoading && !error && !result ? <p className="mt-3 text-sm leading-6 text-slate-500">Output placeholder</p> : null}
 
         {result ? (
           <div className="mt-4 space-y-4 text-sm leading-6 text-slate-700">

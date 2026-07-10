@@ -62,6 +62,7 @@ const boardLabels: Record<
   },
 };
 
+/* Legacy demo content retained for reference.
 function createDemoBoard(topic: string, language: LanguageOption): BoardContent {
   const cleanTopic = topic.replace(/\s+/g, " ").trim();
 
@@ -122,7 +123,7 @@ function createDemoBoard(topic: string, language: LanguageOption): BoardContent 
       `How can you explain ${cleanTopic} in your own words?`,
     ],
   };
-}
+} */
 
 function getBoardText(board: BoardContent, language: LanguageOption) {
   const labels = boardLabels[language];
@@ -172,10 +173,16 @@ export function DigitalBoardCard({
     setIsGenerating(true);
 
     try {
-      // Temporary interview demo mode. Replace this with
-      // a POST request to a future digital board API route.
-      await new Promise((resolve) => setTimeout(resolve, 350));
-      setBoard(createDemoBoard(trimmedTopic, language));
+      const response = await fetch("/api/digital-board", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: trimmedTopic, language }),
+      });
+      const data = (await response.json()) as BoardContent & { error?: string };
+      if (!response.ok) throw new Error(data.error || "Unable to create board notes right now.");
+      setBoard(data);
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Unable to create board notes right now.");
     } finally {
       setIsGenerating(false);
     }
@@ -231,9 +238,7 @@ export function DigitalBoardCard({
     setLanguage(nextLanguage);
     setCopyLabel("Copy Board Content");
 
-    if (board && topic.trim()) {
-      setBoard(createDemoBoard(topic, nextLanguage));
-    }
+    if (board) setBoard(null);
   }
 
   const boardPanel = board ? (
