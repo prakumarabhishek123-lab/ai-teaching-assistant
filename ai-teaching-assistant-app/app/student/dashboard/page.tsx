@@ -88,7 +88,15 @@ export default function StudentDashboardPage() {
             {quickTools.map((tool) => (
               <Link
                 key={tool.name}
-                href="/dashboard"
+                href={
+                  tool.name === "Concept Simplification"
+                    ? "/dashboard/concept-simplification"
+                    : tool.name === "Voice Quiz"
+                      ? "/dashboard/voice-quiz"
+                      : tool.name === "Translation & Dictation"
+                        ? "/dashboard/translation-dictation"
+                        : "/dashboard/digital-board"
+                }
                 className="group flex min-h-24 items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-violet-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-violet-100"
               >
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-xs font-black text-violet-800" aria-hidden="true">{tool.icon}</span>
