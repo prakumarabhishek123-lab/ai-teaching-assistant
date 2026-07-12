@@ -5,8 +5,8 @@ import { CLASS_LEVELS, SUBJECTS } from "@/lib/config/education";
 const quickActions = [
   { title: "Create Worksheet", description: "Build class-ready practice", icon: "WS", color: "bg-blue-50 text-blue-800 border-blue-200", href: "/teacher/worksheet-generator" },
   { title: "Create Quiz", description: "Check student understanding", icon: "QZ", color: "bg-violet-50 text-violet-800 border-violet-200", href: "/teacher/quiz-generator" },
-  { title: "Assign Homework", description: "Set work for the class", icon: "HW", color: "bg-amber-50 text-amber-800 border-amber-200" },
-  { title: "View Student Progress", description: "Review learning at a glance", icon: "PR", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  { title: "Assign Homework", description: "Set work for the class", icon: "HW", color: "bg-amber-50 text-amber-800 border-amber-200", href: "/teacher/homework" },
+{ title: "View Student Progress", description: "Review learning at a glance", icon: "PR", color: "bg-emerald-50 text-emerald-800 border-emerald-200", href: "/teacher/student-progress" },
 ] as const;
 
 const recentAssignments = [
@@ -57,22 +57,29 @@ export default function TeacherDashboardPage() {
               Open AI teaching tools <span aria-hidden="true">→</span>
             </Link>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {quickActions.map((action) => (
-              "href" in action ? (
-                <Link key={action.title} href={action.href} className={`min-h-36 rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-100 ${action.color}`}>
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 text-xs font-black shadow-sm" aria-hidden="true">{action.icon}</span>
-                  <span className="mt-4 block font-bold">{action.title}</span>
-                  <span className="mt-1 block text-xs font-medium opacity-80 sm:text-sm">{action.description}</span>
-                </Link>
-              ) : (
-                <button key={action.title} type="button" className={`min-h-36 rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-100 ${action.color}`}>
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 text-xs font-black shadow-sm" aria-hidden="true">{action.icon}</span>
-                  <span className="mt-4 block font-bold">{action.title}</span>
-                  <span className="mt-1 block text-xs font-medium opacity-80 sm:text-sm">{action.description}</span>
-                </button>
-              )
-            ))}
+  <Link
+    key={action.title}
+    href={action.href}
+    className={`min-h-36 rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-100 ${action.color}`}
+  >
+    <span
+      className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 text-xs font-black shadow-sm"
+      aria-hidden="true"
+    >
+      {action.icon}
+    </span>
+
+    <span className="mt-4 block font-bold">
+      {action.title}
+    </span>
+
+    <span className="mt-1 block text-xs font-medium opacity-80 sm:text-sm">
+      {action.description}
+    </span>
+  </Link>
+))}
           </div>
         </section>
 
