@@ -88,6 +88,12 @@ export default function Home() {
             </Link>
             <div className="flex items-center gap-3">
               <Link
+                href="/login"
+                className="inline-flex items-center justify-center rounded-lg border border-white/50 bg-white/85 px-4 py-2 text-sm font-bold text-slate-950 shadow-md backdrop-blur transition hover:bg-white hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-white/40"
+              >
+                Login
+              </Link>
+              <Link
                 href="/dashboard"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/25 bg-slate-950/90 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-slate-900 sm:w-auto"
               >

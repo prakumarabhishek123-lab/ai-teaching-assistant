@@ -104,12 +104,20 @@ export default function ToolsOverviewPage() {
             </p>
           </div>
 
-          <Link
-            href="/"
-            className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-800 transition hover:border-violet-300 hover:bg-violet-100"
-          >
-            Back Home
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/login"
+              className="rounded-xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-bold text-violet-800 transition hover:bg-violet-50"
+            >
+              Login
+            </Link>
+            <Link
+              href="/"
+              className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-800 transition hover:border-violet-300 hover:bg-violet-100"
+            >
+              Back Home
+            </Link>
+          </div>
         </header>
 
         <section className="mt-6 overflow-hidden rounded-[2rem] border border-white/80 bg-white/65 px-6 py-10 shadow-[0_30px_80px_-42px_rgba(76,29,149,0.45)] backdrop-blur-xl sm:px-10 lg:px-14">

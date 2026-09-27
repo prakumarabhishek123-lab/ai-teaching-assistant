@@ -28,7 +28,7 @@ type Worksheet = {
   answerKey: string[];
 };
 
-const GROQ_MODEL = "llama-3.1-8b-instant";
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 const LANGUAGES: WorksheetLanguage[] = ["English", "Hindi", "Hinglish"];
 
 function isClassLevel(value: unknown): value is ClassLevel {
@@ -201,29 +201,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: SUBJECT_TOPIC_MISMATCH_MESSAGE }, { status: 400 });
     }
 
+    const bodyPayload: Record<string, unknown> = {
+      model: GROQ_MODEL,
+      temperature: 0.35,
+      max_tokens: 1800,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an expert Indian school teacher creating age-appropriate worksheets for Class 1 to Class 8. Return valid JSON only. For Hindi, write in Devanagari. For Hinglish, write natural Roman-script classroom Hinglish. Keep questions clear, syllabus-friendly, and factually accurate.",
+        },
+        {
+          role: "user",
+          content: buildWorksheetPrompt(classLevel, subject, topic, language),
+        },
+      ],
+    };
+
+    if (GROQ_MODEL.includes("gpt-oss")) {
+      bodyPayload.reasoning_format = "hidden";
+    }
+
     const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        temperature: 0.35,
-        max_tokens: 1800,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are an expert Indian school teacher creating age-appropriate worksheets for Class 1 to Class 8. Return valid JSON only. For Hindi, write in Devanagari. For Hinglish, write natural Roman-script classroom Hinglish. Keep questions clear, syllabus-friendly, and factually accurate.",
-          },
-          {
-            role: "user",
-            content: buildWorksheetPrompt(classLevel, subject, topic, language),
-          },
-        ],
-      }),
+      body: JSON.stringify(bodyPayload),
     });
 
     const data = (await groqResponse.json()) as GroqResponse;

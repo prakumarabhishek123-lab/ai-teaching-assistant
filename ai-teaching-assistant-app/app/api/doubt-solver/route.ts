@@ -25,7 +25,7 @@ type DoubtSolution = {
 };
 
 const GEMINI_MODEL = "gemini-2.0-flash";
-const GROQ_MODEL = "llama-3.1-8b-instant";
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 const LANGUAGES: SolverLanguage[] = ["English", "Hindi", "Hinglish"];
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -93,29 +93,35 @@ async function solveTextDoubt(classLevel: string, language: SolverLanguage, ques
   }
 
   try {
+    const bodyPayload: Record<string, unknown> = {
+      model: GROQ_MODEL,
+      temperature: 0.25,
+      max_tokens: 900,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a patient tutor for Indian school children in Class 1 to Class 8. Match vocabulary, detail, and difficulty to the supplied class. Respond only in the requested language: English, Hindi in Devanagari, or natural Hinglish in Roman script. Be warm, accurate, concise, and child-friendly. Return valid JSON only.",
+        },
+        {
+          role: "user",
+          content: buildTutorPrompt(classLevel, language, question),
+        },
+      ],
+    };
+
+    if (GROQ_MODEL.includes("gpt-oss")) {
+      bodyPayload.reasoning_format = "hidden";
+    }
+
     const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${groqApiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        temperature: 0.25,
-        max_tokens: 900,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a patient tutor for Indian school children in Class 1 to Class 8. Match vocabulary, detail, and difficulty to the supplied class. Respond only in the requested language: English, Hindi in Devanagari, or natural Hinglish in Roman script. Be warm, accurate, concise, and child-friendly. Return valid JSON only.",
-          },
-          {
-            role: "user",
-            content: buildTutorPrompt(classLevel, language, question),
-          },
-        ],
-      }),
+      body: JSON.stringify(bodyPayload),
     });
 
     const data = (await groqResponse.json()) as GroqResponse;

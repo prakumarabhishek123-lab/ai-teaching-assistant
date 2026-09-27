@@ -7,6 +7,8 @@ export const metadata: Metadata = {
     "A classroom-focused assistant for lesson simplification, voice quizzes, translation, dictation, and digital board planning.",
 };
 
+import { AuthProvider } from "@/lib/auth/authContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -14,7 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }
